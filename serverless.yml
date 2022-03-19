@@ -1,0 +1,147 @@
+# https://sls.zone/pages/run/hosting-for-a-serverless-project-on-s3/
+service: frontend
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  deploymentBucket:
+    name: sls-frontend-${self:provider.stage}-${self:provider.region}
+
+plugins:
+  - serverless-s3-sync
+  - serverless-stack-termination-protection
+
+custom:
+  serverlessTerminationProtection:
+    stages:
+      - prod
+  domainName: ${ssm:/${self:provider.stage}/${self:service}/domain_name}
+  bucketName: ${self:custom.domainName}
+  s3Sync:
+    - bucketName: ${self:custom.bucketName}
+      localDir: dist
+      params:
+        - index.html:
+            CacheControl: 'no-cache, max-age=30'
+
+# The "Resources" your "Functions" use.  Raw AWS CloudFormation goes in here.
+resources:
+  Resources:
+    WebAppCloudFrontOriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: ${self:service}-${self:provider.stage}
+
+    WebAppBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+
+    WebAppBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      DependsOn:
+        - WebAppCloudFrontOriginAccessIdentity
+      Properties:
+        Bucket:
+          Ref: WebAppBucket
+        PolicyDocument:
+          # https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-language-overview.html
+          Statement:
+            - Sid: CanonicalUserReadGetObject
+              Effect: Allow
+              Principal:
+                CanonicalUser:
+                  # https://docs.aws.amazon.com/ko_kr/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html
+                  # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/cloudfront/get-cloud-front-origin-access-identity.html
+                  Fn::GetAtt:
+                    [WebAppCloudFrontOriginAccessIdentity, S3CanonicalUserId]
+              Action:
+                - s3:GetObject
+              # https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-arn-format.html
+              # https://yonghyuc.wordpress.com/2021/01/20/fnjoin/
+              Resource:
+                Fn::Join:
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - Ref: WebAppBucket
+                    - '/*'
+
+    WebAppCloudFrontCachePolicy:
+      Type: AWS::CloudFront::CachePolicy
+      Properties:
+        CachePolicyConfig:
+          MinTTL: 1
+          MaxTTL: 31536000
+          DefaultTTL: 86400
+          Name: CachingOptimized
+          ParametersInCacheKeyAndForwardedToOrigin:
+            CookiesConfig:
+              CookieBehavior: none
+            EnableAcceptEncodingBrotli: true
+            EnableAcceptEncodingGzip: true
+            HeadersConfig:
+              HeaderBehavior: none
+            QueryStringsConfig:
+              QueryStringBehavior: none
+
+    WebAppCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      DependsOn: WebAppBucketPolicy
+      Properties:
+        DistributionConfig:
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            TargetOriginId: ${self:service}
+            CachePolicyId:
+              Ref: WebAppCloudFrontCachePolicy
+            ViewerProtocolPolicy: redirect-to-https
+          # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-viewercertificate.html#cfn-cloudfront-distribution-viewercertificate-acmcertificatearn
+          ViewerCertificate:
+            AcmCertificateArn: ${ssm:/${self:provider.stage}/${self:service}/acm_certificate_arn}
+            SslSupportMethod: sni-only
+          DefaultRootObject: index.html
+          Aliases:
+            - ${self:custom.domainName}
+          Enabled: true
+          HttpVersion: http2
+          Logging:
+            IncludeCookies: false
+            Bucket: ${self:custom.bucketName}.s3.amazonaws.com
+            Prefix: cf-logs
+          Origins:
+            - DomainName: ${self:custom.bucketName}.s3.amazonaws.com
+              Id: ${self:service}
+              OriginShield:
+                Enabled: true
+                OriginShieldRegion: ap-northeast-2
+              S3OriginConfig:
+                # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-s3originconfig.html#cfn-cloudfront-distribution-s3originconfig-originaccessidentity
+                OriginAccessIdentity:
+                  Fn::Join:
+                    - ''
+                    - - 'origin-access-identity/cloudfront/'
+                      - Ref: WebAppCloudFrontOriginAccessIdentity
+
+  # The "Outputs" that your AWS CloudFormation Stack should produce.  This allows references between services.
+  Outputs:
+    WebAppBucket:
+      Value:
+        Ref: WebAppBucket
+    WebAppCloudFrontDistributionDomainName:
+      Value:
+        Fn::GetAtt: [WebAppCloudFrontDistribution, DomainName]
