@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="h-screen bg-black">
-      <div className="text-blue-500 font-bold">Test</div>;
+      <div className="text-blue-500 text-3xl">Test</div>;
     </div>
   );
 }
