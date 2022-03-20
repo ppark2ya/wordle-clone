@@ -16657,6 +16657,7 @@ __metadata:
     tailwindcss: ^3.0.23
     typescript: ^4.6.2
     web-vitals: ^2.1.4
+    zustand: ^3.7.1
   languageName: unknown
   linkType: soft
 
@@ -17101,5 +17102,17 @@ __metadata:
     compress-commons: ^4.1.0
     readable-stream: ^3.6.0
   checksum: 4a73da856738b0634700b52f4ab3fe0bf0a532bea6820ad962d0bda0163d2d5525df4859f89a7238e204a378384e12551985049790c1894c3ac191866e85887f
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "zustand@npm:3.7.1"
+  peerDependencies:
+    react: ">=16.8"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 987a2cee95e0fd085c3556d21289a34bb1e9727155837c480617dee839453858523d6321abf3b18de4867fb07d14f5ff7abf9a8404357baa7ec73dffec6dd4f7
   languageName: node
   linkType: hard

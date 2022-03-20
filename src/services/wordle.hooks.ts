@@ -1,6 +1,7 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import { AxiosError } from 'axios';
 import { getWordleDatas } from './wordle.api';
+import { GAME_PROGRESS_TIME } from 'constants/time';
 
 export function useWordleQuery(
   options:
@@ -10,7 +11,7 @@ export function useWordleQuery(
   return useQuery<string[], AxiosError>(['wordle'], getWordleDatas, {
     retry: 2,
     refetchOnWindowFocus: false,
-    staleTime: 60 * 1000 * 10, // 10 minute
+    staleTime: GAME_PROGRESS_TIME,
     ...options,
   });
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import Header from 'components/Header';
 import { useWordleQuery } from 'services/wordle.hooks';
 import { APP_STAGE } from './constants/environment';
 
@@ -11,8 +12,8 @@ function App() {
   console.log(data);
 
   return (
-    <div className="h-screen bg-black">
-      <div className="text-blue-500 text-3xl">Test</div>;
+    <div className="h-screen bg-night">
+      <Header />
     </div>
   );
 }
