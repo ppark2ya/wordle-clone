@@ -1,3 +1,15 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .game-tile {
+    @apply border-2 border-outline w-16 h-16 flex justify-center items-center text-4xl;
+  }
+
+  .key {
+    @apply flex flex-1 justify-center items-center bg-key h-14 rounded cursor-pointer mr-1.5;
+    text-transform: uppercase;
+  }
+}

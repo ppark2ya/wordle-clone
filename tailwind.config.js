@@ -9,6 +9,7 @@ module.exports = {
         night: '#121213',
         tile: '#787c7e', // 타일색
         outline: '#3a3a3c', // border
+        key: '#818384',
       },
     },
   },
