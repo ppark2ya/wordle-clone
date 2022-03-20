@@ -10,8 +10,11 @@ if (APP_STAGE === 'local') {
 }
 
 function App() {
-  const { data } = useWordleQuery();
-  console.log(data);
+  useWordleQuery({
+    onSuccess(data: string[]) {
+      console.log(data);
+    },
+  });
 
   return (
     <div className="h-screen bg-night">

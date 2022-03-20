@@ -49,6 +49,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:5.15.0"],\
             ["autoprefixer", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:10.4.4"],\
             ["axios", "npm:0.26.1"],\
+            ["classnames", "npm:2.3.1"],\
             ["craco-swc", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:0.2.0"],\
             ["cssnano", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:5.1.4"],\
             ["eslint", "npm:8.11.0"],\
@@ -7374,6 +7375,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/cjs-module-lexer-npm-1.2.2-473ce063ea-977f3f042b.zip/node_modules/cjs-module-lexer/",\
           "packageDependencies": [\
             ["cjs-module-lexer", "npm:1.2.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["classnames", [\
+        ["npm:2.3.1", {\
+          "packageLocation": "./.yarn/cache/classnames-npm-2.3.1-f2ae0a8d3c-14db8889d5.zip/node_modules/classnames/",\
+          "packageDependencies": [\
+            ["classnames", "npm:2.3.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -21661,6 +21671,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:5.15.0"],\
             ["autoprefixer", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:10.4.4"],\
             ["axios", "npm:0.26.1"],\
+            ["classnames", "npm:2.3.1"],\
             ["craco-swc", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:0.2.0"],\
             ["cssnano", "virtual:ce7abc24225866c4a7cc3dd36fb1fe30a84dd58d9003ace2345f4ab9e1bfd3101b30c93817061dec3c6d9b9898587c583b2021d2e8379ceab4618500d87bc27e#npm:5.1.4"],\
             ["eslint", "npm:8.11.0"],\

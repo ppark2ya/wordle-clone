@@ -8,7 +8,7 @@ module.exports = {
         present: '#c9b458',
         night: '#121213',
         tile: '#787c7e', // 타일색
-        outline: '#3a3a3c', // border
+        absent: '#3a3a3c',
         key: '#818384',
       },
     },

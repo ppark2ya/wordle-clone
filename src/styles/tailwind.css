@@ -5,7 +5,11 @@
 
 @layer components {
   .game-tile {
-    @apply border-2 border-outline w-16 h-16 flex justify-center items-center text-4xl;
+    @apply border-2 border-absent w-16 h-16 flex justify-center items-center text-4xl;
+  }
+
+  .keyboard-row {
+    @apply flex justify-center items-center mb-2;
   }
 
   .key {

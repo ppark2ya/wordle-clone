@@ -5138,6 +5138,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"classnames@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "classnames@npm:2.3.1"
+  checksum: 14db8889d56c267a591f08b0834989fe542d47fac659af5a539e110cc4266694e8de86e4e3bbd271157dbd831361310a8293e0167141e80b0f03a0f175c80960
+  languageName: node
+  linkType: hard
+
 "clean-css@npm:^5.2.2":
   version: 5.2.4
   resolution: "clean-css@npm:5.2.4"
@@ -16624,6 +16631,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.15.0
     autoprefixer: ^10.4.4
     axios: ^0.26.1
+    classnames: ^2.3.1
     craco-swc: ^0.2.0
     cssnano: ^5.1.4
     eslint: ^8.11.0
