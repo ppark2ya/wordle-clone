@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import create from 'zustand';
-import { persist } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import { TILE_STATUS } from 'constants/status';
 import { GAMEBOARD_STORAGE_NAME } from 'constants/storage';
+import { deserializer, serializer } from 'utils/encoder';
 
 export interface GameBoard {
   // 정답
@@ -23,6 +24,7 @@ export interface KeyboardItem {
 export interface BoardStore {
   gameBoards: [GameBoard[], GameBoard[], GameBoard[], GameBoard[], GameBoard[]];
   keyboardItems: [KeyboardItem[], KeyboardItem[], KeyboardItem[]];
+  setGameBoardAnswer: () => void;
 }
 
 const initialGameBoardItem: GameBoard = {
@@ -163,20 +165,27 @@ const initialKeyboardItems: [KeyboardItem[], KeyboardItem[], KeyboardItem[]] = [
 
 const gameBoardItems = new Array(5).fill(0).map(() => initialGameBoardItem);
 export const useBoardStore = create<BoardStore>(
-  persist(
-    (set, get) => ({
-      gameBoards: [
-        [...gameBoardItems],
-        [...gameBoardItems],
-        [...gameBoardItems],
-        [...gameBoardItems],
-        [...gameBoardItems],
-      ],
-      keyboardItems: initialKeyboardItems,
-    }),
-    {
-      name: GAMEBOARD_STORAGE_NAME,
-      getStorage: () => sessionStorage,
-    },
+  devtools(
+    persist(
+      (set, get) => ({
+        gameBoards: [
+          [...gameBoardItems],
+          [...gameBoardItems],
+          [...gameBoardItems],
+          [...gameBoardItems],
+          [...gameBoardItems],
+        ],
+        keyboardItems: initialKeyboardItems,
+        setGameBoardAnswer: () => {
+          set((state) => ({ gameBoards: state.gameBoards }));
+        },
+      }),
+      {
+        name: GAMEBOARD_STORAGE_NAME,
+        getStorage: () => sessionStorage,
+        serialize: (state) => serializer(state),
+        deserialize: (serializeString) => deserializer(serializeString),
+      },
+    ),
   ),
 );

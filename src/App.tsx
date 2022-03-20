@@ -9,10 +9,14 @@ if (APP_STAGE === 'local') {
   require('./mocks');
 }
 
+const randomIndex = (len: number) => Math.floor(Math.random() * len);
+
 function App() {
   useWordleQuery({
     onSuccess(data: string[]) {
       console.log(data);
+      const len = data.length - 1;
+      console.log(data[randomIndex(len)]);
     },
   });
 
