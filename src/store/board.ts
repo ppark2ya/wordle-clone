@@ -6,14 +6,10 @@ import { GAMEBOARD_STORAGE_NAME } from 'constants/storage';
 import { deserializer, serializer } from 'utils/encoder';
 
 export interface GameBoard {
-  // 정답
-  answer: string[];
   // 유저 입력 값
-  userAnswer: string[];
-  // 해당 줄이 완료되었는지 여부
-  isDone: boolean;
+  userAnswer: string;
   // 제출한 답안 상태
-  submitAnswer: TILE_STATUS[];
+  tileStatus: TILE_STATUS[];
 }
 
 export interface KeyboardItem {
@@ -22,16 +18,21 @@ export interface KeyboardItem {
 }
 
 export interface BoardStore {
-  gameBoards: [GameBoard[], GameBoard[], GameBoard[], GameBoard[], GameBoard[]];
+  solution: string;
+  words: string[];
+  gameBoards: GameBoard[];
   keyboardItems: [KeyboardItem[], KeyboardItem[], KeyboardItem[]];
-  setGameBoardAnswer: () => void;
+  currentAnswer: string;
+  currentRow: number;
+  setGameBoardSolution: (solution: string) => void;
+  setAllWords: (words: string[]) => void;
+  setCurrentAnswer: (currentAnswer: string) => void;
+  submitUserAnswer: () => void;
 }
 
 const initialGameBoardItem: GameBoard = {
-  answer: [],
-  userAnswer: [],
-  isDone: false,
-  submitAnswer: [],
+  userAnswer: '',
+  tileStatus: [],
 };
 
 const initialKeyboardItems: [KeyboardItem[], KeyboardItem[], KeyboardItem[]] = [
@@ -163,21 +164,103 @@ const initialKeyboardItems: [KeyboardItem[], KeyboardItem[], KeyboardItem[]] = [
   ],
 ];
 
-const gameBoardItems = new Array(5).fill(0).map(() => initialGameBoardItem);
+const gameBoardItemRows = new Array(6).fill(0).map(() => initialGameBoardItem);
+
 export const useBoardStore = create<BoardStore>(
   devtools(
     persist(
-      (set, get) => ({
-        gameBoards: [
-          [...gameBoardItems],
-          [...gameBoardItems],
-          [...gameBoardItems],
-          [...gameBoardItems],
-          [...gameBoardItems],
-        ],
+      (set) => ({
+        solution: '',
+        words: [''],
+        gameBoards: gameBoardItemRows,
         keyboardItems: initialKeyboardItems,
-        setGameBoardAnswer: () => {
-          set((state) => ({ gameBoards: state.gameBoards }));
+        currentAnswer: '',
+        currentRow: 0,
+        setGameBoardSolution: (solution: string) => {
+          set(() => ({ solution }));
+        },
+        setAllWords: (words: string[]) => {
+          set(() => ({ words }));
+        },
+        setCurrentAnswer: (currentAnswer: string) => {
+          set((state) => {
+            const { gameBoards, currentRow } = state;
+            const newGameBoards = gameBoards.map((gameboard, row) => {
+              if (currentRow === row) {
+                return {
+                  ...gameboard,
+                  userAnswer: currentAnswer,
+                };
+              } else {
+                return {
+                  ...gameboard,
+                };
+              }
+            });
+
+            return { gameBoards: newGameBoards, currentAnswer };
+          });
+        },
+        submitUserAnswer: () => {
+          set((state) => {
+            const {
+              solution,
+              gameBoards,
+              keyboardItems,
+              currentAnswer,
+              currentRow,
+            } = state;
+
+            const tileStatus: TILE_STATUS[] = [];
+            const queue: string[] = [];
+            let temp: TILE_STATUS = TILE_STATUS.NONE;
+
+            for (let i = 0; i < currentAnswer.length; i++) {
+              for (let j = 0; j < solution.length; j++) {
+                // 같은 문자가 있을 때
+                if (currentAnswer[i] === solution[j].toUpperCase()) {
+                  // 위치도 같다면
+                  if (i === j) {
+                    queue.push(solution[j]);
+                    temp = TILE_STATUS.CORRECT;
+                    break;
+                  } else {
+                    if (queue.includes(solution[j])) {
+                      // 앞에서 나온 철자인 경우 색을 칠하지 않음
+                      temp = TILE_STATUS.ABSENT;
+                    } else {
+                      queue.push(solution[j]);
+                      temp = TILE_STATUS.PRESENT;
+                      break;
+                    }
+                  }
+                } else {
+                  temp = TILE_STATUS.ABSENT;
+                }
+              }
+              tileStatus[i] = temp;
+            }
+
+            const newGameBoards = gameBoards.map((gameboard, row) => {
+              if (currentRow === row) {
+                return {
+                  ...gameboard,
+                  userAnswer: currentAnswer,
+                  tileStatus,
+                };
+              } else {
+                return {
+                  ...gameboard,
+                };
+              }
+            });
+
+            return {
+              gameBoards: newGameBoards,
+              currentAnswer: '',
+              currentRow: state.currentRow + 1,
+            };
+          });
         },
       }),
       {

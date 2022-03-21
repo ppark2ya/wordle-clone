@@ -5,7 +5,7 @@
 
 @layer components {
   .game-tile {
-    @apply border-2 border-absent w-16 h-16 flex justify-center items-center text-4xl;
+    @apply border-2 border-absent w-16 h-16 flex justify-center items-center text-4xl uppercase;
   }
 
   .keyboard-row {
@@ -13,7 +13,20 @@
   }
 
   .key {
-    @apply flex flex-1 justify-center items-center bg-key h-14 rounded cursor-pointer mr-1.5;
-    text-transform: uppercase;
+    @apply flex flex-1 justify-center items-center bg-key h-14 rounded cursor-pointer mr-1.5 uppercase;
   }
+}
+
+.correct {
+  @apply bg-correct;
+}
+
+/** 정답 중에 있지만 위치는 다름 */
+.present {
+  @apply bg-present;
+}
+
+/** 없는 철자 */
+.absent {
+  @apply bg-absent;
 }
