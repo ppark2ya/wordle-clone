@@ -1,28 +1,38 @@
 import React from 'react';
 import shallow from 'zustand/shallow';
+import classnames from 'classnames';
 import { GameBoard as GameBoardType, useBoardStore } from 'store/board';
+import { BOARD_COL_COUNT } from 'constants/status';
 
+/**
+ * @desc 상태에 따른 타일 색상 ( 클립보드 저장 용 )
+ * correct: 🟩
+ * present: 🟨
+ * absent: ⬛
+ * any: ⬜
+ */
 function GameBoard() {
-  const [solution, gameBoards] = useBoardStore(
-    (state) => [state.solution, state.gameBoards],
-    shallow,
-  );
-  const TILE_LENGTH = React.useMemo(() => solution.length, [solution]);
+  const [gameBoards] = useBoardStore((state) => [state.gameBoards], shallow);
 
   const renderGameboardItems = gameBoards.reduce(
     (rows: React.ReactElement[], board: GameBoardType, i) => {
       rows[i] = (
         <div key={i} className="grid grid-cols-5 gap-1">
-          {new Array(TILE_LENGTH).fill(0).map((_, j) => (
-            <div
-              key={j}
-              className={`game-tile ${
-                board.tileStatus[j]?.toLowerCase() ?? ''
-              }`}
-            >
-              {board.userAnswer[j]}
-            </div>
-          ))}
+          {new Array(BOARD_COL_COUNT).fill(0).map((_, j) => {
+            const tileClasses = classnames(
+              'game-tile',
+              board.tileStatus[j]?.toLowerCase() ?? '',
+              {
+                'pop-in': board.userAnswer[j] !== undefined,
+              },
+            );
+
+            return (
+              <div key={j} className={tileClasses}>
+                {board.userAnswer[j]}
+              </div>
+            );
+          })}
         </div>
       );
       return rows;

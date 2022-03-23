@@ -19,14 +19,17 @@
 
 .correct {
   @apply bg-correct;
+  border: none;
 }
 
 /** 정답 중에 있지만 위치는 다름 */
 .present {
   @apply bg-present;
+  border: none;
 }
 
 /** 없는 철자 */
 .absent {
   @apply bg-absent;
+  border: none;
 }

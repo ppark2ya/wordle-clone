@@ -2,12 +2,14 @@ import React from 'react';
 import shallow from 'zustand/shallow';
 import Backspace from 'assets/svgs/Backspace';
 import { KeyboardItem, useBoardStore } from 'store/board';
+import { BOARD_COL_COUNT } from 'constants/status';
 
 function Keyboard() {
   const {
     words,
     keyboardItems,
     currentAnswer,
+    isGameEnd,
     setCurrentAnswer,
     submitUserAnswer,
   } = useBoardStore(
@@ -15,6 +17,7 @@ function Keyboard() {
       words: state.words,
       keyboardItems: state.keyboardItems,
       currentAnswer: state.currentAnswer,
+      isGameEnd: state.isGameEnd,
       setCurrentAnswer: state.setCurrentAnswer,
       submitUserAnswer: state.submitUserAnswer,
     }),
@@ -25,7 +28,7 @@ function Keyboard() {
     (key: string) => {
       const upperCaseKey = key.toUpperCase();
       if (upperCaseKey === 'ENTER') {
-        if (currentAnswer.length === 5) {
+        if (currentAnswer.length === BOARD_COL_COUNT) {
           if (!words.includes(currentAnswer.toLowerCase())) {
             // TODO: Toast로 변경
             alert('존재하지 않는 단어입니다');
@@ -38,7 +41,7 @@ function Keyboard() {
           setCurrentAnswer(currentAnswer.slice(0, currentAnswer.length - 1));
         }
       } else {
-        if (currentAnswer.length !== 5) {
+        if (currentAnswer.length !== BOARD_COL_COUNT) {
           setCurrentAnswer(currentAnswer + upperCaseKey);
         }
       }
@@ -48,6 +51,9 @@ function Keyboard() {
 
   const handleKeyupEvent = React.useCallback(
     (event: KeyboardEvent) => {
+      if (isGameEnd) {
+        return;
+      }
       const { key } = event;
       const regex = /^[a-zA-Z]$|(ENTER)|(BACKSPACE)/i;
 
@@ -55,7 +61,7 @@ function Keyboard() {
         submitUserSolution(key);
       }
     },
-    [words, currentAnswer],
+    [words, currentAnswer, isGameEnd],
   );
 
   React.useEffect(() => {
