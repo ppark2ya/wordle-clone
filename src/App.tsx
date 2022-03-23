@@ -4,18 +4,22 @@ import { useWordleQuery } from 'services/wordle.hooks';
 import { APP_STAGE } from './constants/environment';
 import GameBoard from 'components/GameBoard';
 import Keyboard from 'components/Keyboard';
-import { useBoardStore } from 'store/board';
+import { useHeaderStore, useBoardStore } from 'store';
+import { GAME_PROGRESS_TIME } from 'constants/time';
 
 if (APP_STAGE === 'local') {
   require('./mocks');
 }
 
 function App() {
-  const { data } = useWordleQuery();
-  const [setAllWords, setGameBoardSolution] = useBoardStore((state) => [
-    state.setAllWords,
-    state.setGameBoardSolution,
+  const { data, refetch } = useWordleQuery();
+  const [currentTime, resetCurrentTime] = useHeaderStore((state) => [
+    state.currentTime,
+    state.resetCurrentTime,
   ]);
+  const [setAllWords, setGameBoardSolution, resetGame] = useBoardStore(
+    (state) => [state.setAllWords, state.setGameBoardSolution, state.resetGame],
+  );
 
   React.useEffect(() => {
     if (data) {
@@ -24,6 +28,14 @@ function App() {
       setGameBoardSolution(data[randomIndex]);
     }
   }, [data]);
+
+  React.useEffect(() => {
+    if (currentTime === GAME_PROGRESS_TIME) {
+      refetch();
+      resetCurrentTime();
+      resetGame();
+    }
+  }, [currentTime]);
 
   return (
     <div className="h-screen bg-night">

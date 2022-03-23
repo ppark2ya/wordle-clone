@@ -30,7 +30,7 @@ function Keyboard() {
       if (upperCaseKey === 'ENTER') {
         if (currentAnswer.length === BOARD_COL_COUNT) {
           if (!words.includes(currentAnswer.toLowerCase())) {
-            // TODO: Toast로 변경
+            // TODO: Toast로 변경, Row가 좌우로 흔들리는 애니메이션 필요
             alert('존재하지 않는 단어입니다');
             return;
           }

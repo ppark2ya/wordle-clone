@@ -36,10 +36,13 @@ export interface BoardStore {
   currentAnswer: string;
   currentRow: number;
   isGameEnd: boolean;
+  // row가 좌우로 흔들리고, 카드가 뒤집히는 등의 애니메이션 상태
+  rowAnimationStatus: string;
   setGameBoardSolution: (solution: string) => void;
   setAllWords: (words: string[]) => void;
   setCurrentAnswer: (currentAnswer: string) => void;
   submitUserAnswer: () => void;
+  resetGame: () => void;
 }
 
 const initialGameBoardItem: GameBoard = {
@@ -181,18 +184,23 @@ const gameBoardItemRows = new Array(BOARD_ROW_COUNT)
   .fill(0)
   .map(() => initialGameBoardItem);
 
+const initialState = {
+  solution: '',
+  words: [''],
+  gameBoards: gameBoardItemRows,
+  keyboardItems: initialKeyboardItems,
+  keyboardStatusList: initialKeyboardStatus,
+  currentAnswer: '',
+  isGameEnd: false as boolean,
+  currentRow: 0,
+  rowAnimationStatus: 'idle' as string,
+};
+
 export const useBoardStore = create<BoardStore>(
   devtools(
     persist(
       (set) => ({
-        solution: '',
-        words: [''],
-        gameBoards: gameBoardItemRows,
-        keyboardItems: initialKeyboardItems,
-        keyboardStatusList: initialKeyboardStatus,
-        currentAnswer: '',
-        isGameEnd: false as boolean,
-        currentRow: 0,
+        ...initialState,
         setGameBoardSolution: (solution: string) => {
           set(() => ({ solution }));
         },
@@ -349,6 +357,9 @@ export const useBoardStore = create<BoardStore>(
                 currentRow === BOARD_ROW_COUNT,
             };
           });
+        },
+        resetGame: () => {
+          set(() => ({ ...initialState }));
         },
       }),
       {
