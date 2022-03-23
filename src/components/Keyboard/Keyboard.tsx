@@ -2,7 +2,7 @@ import React from 'react';
 import shallow from 'zustand/shallow';
 import Backspace from 'assets/svgs/Backspace';
 import { KeyboardItem, useBoardStore } from 'store/board';
-import { BOARD_COL_COUNT } from 'constants/status';
+import { BOARD_COL_COUNT, ROW_STATUS } from 'constants/status';
 
 function Keyboard() {
   const {
@@ -12,6 +12,7 @@ function Keyboard() {
     isGameEnd,
     setCurrentAnswer,
     submitUserAnswer,
+    setRowAnimationStatus,
   } = useBoardStore(
     (state) => ({
       words: state.words,
@@ -20,6 +21,7 @@ function Keyboard() {
       isGameEnd: state.isGameEnd,
       setCurrentAnswer: state.setCurrentAnswer,
       submitUserAnswer: state.submitUserAnswer,
+      setRowAnimationStatus: state.setRowAnimationStatus,
     }),
     shallow,
   );
@@ -30,8 +32,8 @@ function Keyboard() {
       if (upperCaseKey === 'ENTER') {
         if (currentAnswer.length === BOARD_COL_COUNT) {
           if (!words.includes(currentAnswer.toLowerCase())) {
-            // TODO: Toast로 변경, Row가 좌우로 흔들리는 애니메이션 필요
-            alert('존재하지 않는 단어입니다');
+            // TODO: Toast 추가 필요
+            setRowAnimationStatus(ROW_STATUS.INVALID, 600);
             return;
           }
           submitUserAnswer();

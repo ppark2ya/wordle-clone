@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import create from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import {
   BOARD_COL_COUNT,
   BOARD_ROW_COUNT,
+  ROW_STATUS,
+  TILE_ANIMATION_STATUS,
   TILE_STATUS,
 } from 'constants/status';
 import { GAMEBOARD_STORAGE_NAME } from 'constants/storage';
@@ -14,6 +15,7 @@ export interface GameBoard {
   userAnswer: string;
   // 제출한 답안 상태
   tileStatus: TILE_STATUS[];
+  tileAnimationStatus: TILE_ANIMATION_STATUS[];
 }
 
 export interface KeyboardItem {
@@ -36,18 +38,19 @@ export interface BoardStore {
   currentAnswer: string;
   currentRow: number;
   isGameEnd: boolean;
-  // row가 좌우로 흔들리고, 카드가 뒤집히는 등의 애니메이션 상태
-  rowAnimationStatus: string;
+  rowAnimationStatus: ROW_STATUS;
   setGameBoardSolution: (solution: string) => void;
   setAllWords: (words: string[]) => void;
   setCurrentAnswer: (currentAnswer: string) => void;
   submitUserAnswer: () => void;
+  setRowAnimationStatus: (rowStatus: ROW_STATUS, delay: number) => void;
   resetGame: () => void;
 }
 
 const initialGameBoardItem: GameBoard = {
   userAnswer: '',
   tileStatus: [],
+  tileAnimationStatus: [],
 };
 
 const initialKeyboardItems: [KeyboardItem[], KeyboardItem[], KeyboardItem[]] = [
@@ -193,7 +196,7 @@ const initialState = {
   currentAnswer: '',
   isGameEnd: false as boolean,
   currentRow: 0,
-  rowAnimationStatus: 'idle' as string,
+  rowAnimationStatus: ROW_STATUS.NONE,
 };
 
 export const useBoardStore = create<BoardStore>(
@@ -357,6 +360,12 @@ export const useBoardStore = create<BoardStore>(
                 currentRow === BOARD_ROW_COUNT,
             };
           });
+        },
+        setRowAnimationStatus: (rowStatus: ROW_STATUS, delay: number) => {
+          set(() => ({ rowAnimationStatus: rowStatus }));
+          setTimeout(() => {
+            set(() => ({ rowAnimationStatus: ROW_STATUS.NONE }));
+          }, delay);
         },
         resetGame: () => {
           set(() => ({ ...initialState }));
